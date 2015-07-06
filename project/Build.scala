@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 
 object ApplicationBuild extends Build with meta.Properties {
-	val scalaVersions = Seq("2.10.5", "2.11.6")
+	val scalaVersions = Seq("2.10.5", scalaRelease)
 	
 	lazy val root = (project in file(".")).settings(
 		name := "iso-macro",
