@@ -1,37 +1,56 @@
 import sbt._
 import Keys._
 
-object ApplicationBuild extends Build with meta.Properties {
-	val scalaVersions = Seq("2.10.5", scalaRelease)
+import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
+import org.scalajs.sbtplugin.ScalaJSPlugin
+import ScalaJSPlugin.autoImport._
+
+object ApplicationBuild extends Build {
+	val scalaVersions = Seq("2.10.6", "2.11.8") // "2.12.0"
+	/*
+	 * NOTE: both root project and cross project
+	 * 	share the same source tree; however,
+	 * 	they BOTH need to be published in order for:
+	 * 	1) bindings project to pull in "value-class-root" dep
+	 * 	2) js/jvm apps to pull in "value-class-isomorphism" dep
+	 */
+  lazy val root =
+  	project.in(file(".")).settings(
+      name := "value-class-root"
+      //publish := {}, publishLocal := {}
+    ).
+    dependsOn(sharedJvm, sharedJs).
+    aggregate(sharedJvm, sharedJs)
 	
-	lazy val root = (project in file(".")).settings(
-		name := "iso-macro",
-		scalacOptions ++= scalaOptionsVersion(
-			scalaVersion.value, flags210 = Seq("-Yfundep-materialization"), Nil
-		),
-		libraryDependencies +=
-			"org.scala-lang" % "scala-reflect" % scalaVersion.value
-	)
-	lazy val bindings = (project in file("bindings")).settings(
-		name := "iso-bindings",
-		organization in ThisBuild := "godenji",
-		version in ThisBuild := isoMacrosVersion,
-		crossScalaVersions := scalaVersions,
-		scalaVersion in ThisBuild := scalaVersions.head,
-		scalacOptions ++= scalaOptionsVersion(
-			scalaVersion.value, flags210 = Seq("-Xdivergence211"), Nil
-		),
-		mappings in (Compile, packageBin) ++= mappings.in(root, Compile, packageBin).value,
-		mappings in (Compile, packageSrc) ++= mappings.in(root, Compile, packageSrc).value
-	).enablePlugins(play.sbt.PlayScala).dependsOn(root).aggregate(root)
-	
-	// provide scalac flag(s) based on Scala version
-	def scalaOptionsVersion(
-		scalaVersion: String, flags210: Seq[String], flags211: Seq[String]
-	) =
-		(CrossVersion.partialVersion(scalaVersion) match {
-			case Some((2, scalaMajor)) if scalaMajor == 10 => flags210
-			case Some((2, scalaMajor)) if scalaMajor == 11 => flags211
-			case _=> Nil
-		})
+  lazy val sharedJvm = shared.jvm
+  lazy val sharedJs  = shared.js
+	lazy val shared =
+    crossProject.crossType(CrossType.Pure).in(file(".")).
+    settings(
+  		name := "value-class-isomorphism",
+  		organization in ThisBuild := "godenji",
+			version in ThisBuild := "0.1.0",
+			crossScalaVersions in ThisBuild := scalaVersions,
+			scalaVersion := scalaVersions.head,
+			scalacOptions ++= (
+				if(scalaVersion.value startsWith "2.10.") Seq(
+					"-Yfundep-materialization"
+				) else Nil
+      ),
+	    //EclipseKeys.useProjectId := true,
+			libraryDependencies +=
+				"org.scala-lang" % "scala-reflect" % scalaVersion.value
+		)
+
+	lazy val bindings =
+		project.in(file("bindings")).settings(
+			name := "value-class-bindable",
+			scalaVersion := scalaVersions.tail.head,
+			scalacOptions ++= (
+				if(scalaVersion.value startsWith "2.10.") Seq(
+					"-Xdivergence211"
+				) else Nil
+      )
+		).
+		enablePlugins(play.sbt.PlayScala).dependsOn(root).aggregate(root)
 }
