@@ -1,10 +1,10 @@
-package godenji.iso
-package bind
+package godenji.macros
+package bindable
 
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
 object Route {
-	import macros._
+	import isomorphism._
 	/**
 	 * materialize a value class path bindable
 	 */

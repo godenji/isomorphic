@@ -1,9 +1,9 @@
 /*
- * this is a modified version of Slick's macro implementation:
+ * this is a modified version of Slick's value class isomorphism:
  * @see https://github.com/slick/slick/blob/648184c7cb710563d07b859891ed7fe46d06849d/slick/src/main/scala/slick/lifted/MappedTo.scala 
  */
-package godenji.iso
-package macros
+package godenji.macros
+package isomorphism
 
 import scala.language.experimental.macros
 import scala.reflect.macros.Context
@@ -13,7 +13,7 @@ import scala.util.control.NonFatal
  * convert to/from a value class and its underlying
  * primitive type
  */
-class Isomorphism[T <: MappedToBase](
+final class Isomorphism[T <: MappedToBase](
 	val map: T => T#Underlying, val comap: T#Underlying => T
 )
 
@@ -24,7 +24,7 @@ class Isomorphism[T <: MappedToBase](
  * {{{case class FooId(id: Long) extends AnyVal with MappedTo[Long]}}}
  */
 trait MappedTo[T] extends Any with MappedToBase {
-	type Underlying = T
+	final type Underlying = T
 	def value: T
 	override def toString() = s"$value"
 }
