@@ -6,7 +6,7 @@ package godenji.macros
 package isomorphism
 
 import scala.language.experimental.macros
-import scala.reflect.macros.Context
+import scala.reflect.macros.blackbox.Context
 import scala.util.control.NonFatal
 
 /**
@@ -53,21 +53,21 @@ object MappedToBase {
 			"Work-around for illegal macro-invocation; see SI-8351"
 		)
 		implicit val eutag = c.TypeTag[T#Underlying](
-			e.tpe.member( newTypeName("Underlying") ).typeSignatureIn(e.tpe)
+			e.tpe.member( TypeName("Underlying") ).typeSignatureIn(e.tpe)
 		)
 		val cons = c.Expr[T#Underlying => T](Function(
 			List(ValDef(
-				Modifiers(Flag.PARAM), newTermName("v"), TypeTree(), EmptyTree)
+				Modifiers(Flag.PARAM), TermName("v"), TypeTree(), EmptyTree)
 			),
 			Apply(
-				Select(New(TypeTree(e.tpe)), nme.CONSTRUCTOR),
-				List(Ident(newTermName("v")))
+				Select(New(TypeTree(e.tpe)), termNames.CONSTRUCTOR),
+				List(Ident(TermName("v")))
 			)
 		))
 		val res = reify{
 			new Isomorphism[T](_.value, cons.splice)
 		}
-		try c.typeCheck(res.tree) catch { case NonFatal(ex) =>
+		try c.typecheck(res.tree) catch { case NonFatal(ex) =>
 			val p = c.enclosingPosition
 			val msg = s"Error typechecking MappedToBase expansion: ${ex.getMessage}"
 			println(s"${p.source.path} : ${p.line} $msg")

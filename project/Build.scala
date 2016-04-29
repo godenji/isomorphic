@@ -6,7 +6,8 @@ import org.scalajs.sbtplugin.ScalaJSPlugin
 import ScalaJSPlugin.autoImport._
 
 object ApplicationBuild extends Build {
-	val scalaVersions = Seq("2.10.6", "2.11.8") // "2.12.0"
+	val scalaCurrent = "2.11.8" // "2.12.0"
+	val scalaCrossVersions = Seq(/* "2.11.8", */ scalaCurrent)
 	/*
 	 * NOTE: both root project and cross project
 	 * 	share the same source tree; however,
@@ -29,14 +30,9 @@ object ApplicationBuild extends Build {
     settings(
   		name := "value-class-isomorphism",
   		organization in ThisBuild := "godenji",
-			version in ThisBuild := "0.1.0",
-			crossScalaVersions in ThisBuild := scalaVersions,
-			scalaVersion := scalaVersions.head,
-			scalacOptions ++= (
-				if(scalaVersion.value startsWith "2.10.") Seq(
-					"-Yfundep-materialization"
-				) else Nil
-      ),
+			version in ThisBuild := "0.1.1",
+			crossScalaVersions in ThisBuild := scalaCrossVersions,
+			scalaVersion in ThisBuild := scalaCurrent,
 	    //EclipseKeys.useProjectId := true,
 			libraryDependencies +=
 				"org.scala-lang" % "scala-reflect" % scalaVersion.value
@@ -45,12 +41,7 @@ object ApplicationBuild extends Build {
 	lazy val bindings =
 		project.in(file("bindings")).settings(
 			name := "value-class-bindable",
-			scalaVersion := scalaVersions.tail.head,
-			scalacOptions ++= (
-				if(scalaVersion.value startsWith "2.10.") Seq(
-					"-Xdivergence211"
-				) else Nil
-      )
+			scalaVersion := scalaCurrent
 		).
 		enablePlugins(play.sbt.PlayScala).dependsOn(root).aggregate(root)
 }
