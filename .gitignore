@@ -4,6 +4,11 @@ project/target
 target
 .target
 .cache
+.cache-main
+/.cache-main
+.classpath
+/*.class
+/*.sjsir
 tmp
 .history
 dist
@@ -13,8 +18,10 @@ dist
 /.idea_modules
 /.classpath
 /.project
+.project
 /RUNNING_PID
 /.settings
+.settings/
 *~
 bin/
 sbt-cache-config/
