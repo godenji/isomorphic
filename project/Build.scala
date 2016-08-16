@@ -5,9 +5,11 @@ import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import ScalaJSPlugin.autoImport._
 
-object ApplicationBuild extends Build {
-	val scalaCurrent = "2.11.8" // "2.12.0"
-	val scalaCrossVersions = Seq(/* "2.11.8", */ scalaCurrent)
+object ApplicationBuild extends Build
+	with meta.Build with MyBuildSettings{
+	
+	lazy val superSettings = super.settings
+	val scalaCrossVersions = Seq(/* "2.11.8", */ scalaRelease)
 	/*
 	 * NOTE: both root project and cross project
 	 * 	share the same source tree; however,
@@ -28,11 +30,11 @@ object ApplicationBuild extends Build {
 	lazy val shared =
     crossProject.crossType(CrossType.Pure).in(file(".")).
     settings(
-  		name := "value-class-isomorphism",
+  		name := appName,
   		organization in ThisBuild := "godenji",
-			version in ThisBuild := "0.1.1",
+			version in ThisBuild := appVersion,
 			crossScalaVersions in ThisBuild := scalaCrossVersions,
-			scalaVersion in ThisBuild := scalaCurrent,
+			scalaVersion in ThisBuild := scalaRelease,
 	    //EclipseKeys.useProjectId := true,
 			libraryDependencies +=
 				"org.scala-lang" % "scala-reflect" % scalaVersion.value
@@ -41,7 +43,7 @@ object ApplicationBuild extends Build {
 	lazy val bindings =
 		project.in(file("bindings")).settings(
 			name := "value-class-bindable",
-			scalaVersion := scalaCurrent
+			scalaVersion := scalaRelease
 		).
 		enablePlugins(play.sbt.PlayScala).dependsOn(root).aggregate(root)
 }

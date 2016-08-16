@@ -1,9 +1,5 @@
 logLevel := Level.Warn
 
-addSbtPlugin(
-  "com.typesafe.play" % "sbt-plugin" % "2.5.3"
-)
+import meta.Build.Plugins._
 
-addSbtPlugin(
-  "org.scala-js" % "sbt-scalajs" % "0.6.8"
-)
+sbtCommon; eclipseCommon; play(); scalaJs()
