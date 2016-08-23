@@ -43,7 +43,8 @@ object ApplicationBuild extends Build
 	lazy val bindings =
 		project.in(file("bindings")).settings(
 			name := "value-class-bindable",
-			scalaVersion := scalaRelease
+			scalaVersion := scalaRelease,
+      libraryDependencies += Libs.scalaTestPlay
 		).
 		enablePlugins(play.sbt.PlayScala).dependsOn(root).aggregate(root)
 }
