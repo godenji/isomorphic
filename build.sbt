@@ -1,5 +1,4 @@
-import org.scalajs.sbtplugin.ScalaJSPlugin
-import ScalaJSPlugin.autoImport._
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import ApplicationBuild._
 
 val scalaCrossVersions = Seq(/* "2.11.8", */ scalaRelease)
@@ -21,7 +20,7 @@ lazy val root =
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs  = shared.js
 lazy val shared =
-  crossProject.crossType(CrossType.Pure).in(file(".")).
+  crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure).in(file(".")).
   settings(
     name := appName,
     organization in ThisBuild := "godenji",
