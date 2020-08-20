@@ -30,8 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * this is a modified version of Slick's value class isomorphism:
  * @see https://github.com/slick/slick/blob/648184c7cb710563d07b859891ed7fe46d06849d/slick/src/main/scala/slick/lifted/MappedTo.scala
  */
-package godenji.macros
-package isomorphism
+package godenji.iso
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox.Context
@@ -46,7 +45,7 @@ final class Isomorphism[T <: MappedToBase](
 )
 
 /**
- * trait that your value classes must extend
+ * trait that your value class must extend
  * (provides concrete primitive type for macro materializer)
  *
  * {{{case class FooId(id: Long) extends AnyVal with MappedTo[Long]}}}
@@ -69,9 +68,10 @@ trait MappedToBase extends Any {
  * macro that materializes the isomorphism
  */
 object MappedToBase {
-  implicit def isomorphicToIsomorphism[T <: MappedToBase]: Isomorphism[T] = macro isomorphicToIsomorphismMacro[T]
+  implicit def mappedToIso[T <: MappedToBase]: Isomorphism[T] = macro mappedToIsoMacro[T]
 
-  def isomorphicToIsomorphismMacro[T <: MappedToBase](c: Context)(implicit e: c.WeakTypeTag[T]): c.Expr[Isomorphism[T]] = {
+  def mappedToIsoMacro[T <: MappedToBase]
+    (c: Context)(implicit e: c.WeakTypeTag[T]): c.Expr[Isomorphism[T]] = {
 
     import c.universe._
     if (!(e.tpe <:< c.typeOf[MappedToBase])) c.abort(

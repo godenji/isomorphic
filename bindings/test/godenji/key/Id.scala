@@ -1,7 +1,6 @@
-package godenji.macros
+package godenji.iso
 package key
 
-import isomorphism.MappedTo
 /**
  * identifier base trait for value classes
  */
@@ -14,14 +13,14 @@ object Id {
   )
 
   /** default Id value's type */
-  type Value = Int
+  type Value = Long
 
   /** default Id */
   type Default = Id[Value]
 
   /** default zero value */
-  val zero: Value = intZero
+  val zero: Value = longZero
 
-  /** cast cookie stored id to Value */
-  def toValue(id: String): Value = id.toInt
+  /** cast String id to Value (e.g. from HTTP cookie or request body) */
+  def toValue(id: String): Value = id.toLong
 }

@@ -1,4 +1,4 @@
-package godenji.macros
+package godenji.iso
 
 import org.scalatestplus.play._
 import play.api.test._

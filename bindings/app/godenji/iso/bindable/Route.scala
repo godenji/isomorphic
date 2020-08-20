@@ -1,10 +1,9 @@
-package godenji.macros
+package godenji.iso
 package bindable
 
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
 object Route {
-  import isomorphism._
   /**
    * materialize a value class path bindable
    */
@@ -14,17 +13,7 @@ object Route {
         Left(_), i => Right(iso.comap(i))
       )
 
-    override def unbind(key: String, id: T): String = {
-      // `pathBind.unbind(key, iso.map(id) )`
-      // we ignore above T => T#Underlying conversion since MappedTo
-      // defines a default toString that returns Underlying as String;
-      // if a subclass defines its own toString it would *not* be applied
-      // since `iso.map(id)` converts to underlying primitive value
-      // and then Play's built-in binders apply String conversion, thus
-      // omitting the custom toString operation.
-      // solution is simple: call toString directly on T.
-      id.toString
-    }
+    override def unbind(key: String, id: T): String = id.toString
   }
 
   /**

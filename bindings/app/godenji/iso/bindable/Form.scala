@@ -1,11 +1,10 @@
-package godenji.macros
+package godenji.iso
 package bindable
 
 import play.api.data.format.{Formatter, Formats}, Formats._
 import play.api.data.FormError
 
 object Form {
-  import isomorphism._
   /**
    * materialize a value class form bindable
    */

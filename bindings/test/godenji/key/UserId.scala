@@ -1,4 +1,4 @@
-package godenji.macros
+package godenji.iso
 package key
 
 case class UserId(value: Id.Value) extends AnyVal with Id.Default
