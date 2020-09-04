@@ -2,6 +2,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
 val scalaRelease = "2.13.3"
 val scalaCrossVersions = Seq("2.12.12", scalaRelease)
+val appVersion = "0.1.7"
 
 lazy val root =
   project.in(file(".")).settings(
@@ -14,33 +15,56 @@ lazy val sharedJvm = shared.jvm
 lazy val sharedJs  = shared.js
 lazy val shared =
   crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure).in(file(".")).
+  settings(baseSettings("isomorphic")).
   settings(publishSettings("isomorphic")).
-  settings(
-    name := "isomorphic",
-    organization in ThisBuild := "io.github.godenji",
-    sonatypeProfileName in ThisBuild := organization.value,
-    version in ThisBuild := "0.1.7",
-    crossScalaVersions in ThisBuild := scalaCrossVersions,
-    scalaVersion in ThisBuild := scalaRelease,
-    credentials ++= {
-      val creds = Path.userHome / ".sonatype" / organization.value
-      if (creds.exists) Seq(Credentials(creds)) else Nil
-    },
-    libraryDependencies +=
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value
-  ).
   enablePlugins(BuildInfoPlugin)
 
 lazy val bindings =
   project.in(file("bindings")).settings(
     name := "isomorphic-play",
-    libraryDependencies +=
-      "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % "test" withSources ()
+    libraryDependencies += scalaTestPlay
   ).
   settings(publishSettings("isomorphicPlay")).
   enablePlugins(play.sbt.PlayScala).
   dependsOn(sharedJvm, sharedJs).
   aggregate(sharedJvm, sharedJs)
+
+lazy val rootSlick =
+  project.in(file("isomorphic-slick")).
+  settings(baseSettings("isomorphic-slick")).
+  settings(publishSettings("isomorphicSlick")).
+  settings(
+    libraryDependencies += "com.typesafe.slick" %% "slick" % "3.3.2"
+  ).
+  enablePlugins(BuildInfoPlugin)
+
+lazy val bindingsSlick =
+  project.in(file("bindings-slick")).settings(
+    name := "isomorphic-play-slick",
+    libraryDependencies += scalaTestPlay
+  ).
+  settings(publishSettings("isomorphicPlaySlick")).
+  enablePlugins(play.sbt.PlayScala).
+  dependsOn(rootSlick).
+  aggregate(rootSlick)
+
+val scalaTestPlay =
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % "test" withSources ()
+
+def baseSettings(projectName: String) = Seq(
+  name := projectName,
+  organization in ThisBuild := "io.github.godenji",
+  sonatypeProfileName in ThisBuild := organization.value,
+  version in ThisBuild := appVersion,
+  crossScalaVersions in ThisBuild := scalaCrossVersions,
+  scalaVersion in ThisBuild := scalaRelease,
+  credentials ++= {
+    val creds = Path.userHome / ".sonatype" / organization.value
+    if (creds.exists) Seq(Credentials(creds)) else Nil
+  },
+  libraryDependencies +=
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value
+)
 
 def publishSettings(projectName: String) = Seq(
   pomExtra := pomDetail,
