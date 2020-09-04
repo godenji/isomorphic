@@ -14,7 +14,7 @@ generated implicit materializer; the Play version which adds support for
 automatic conversion of HTTP routes and form bindings. For users of the Slick database 
 library there's a Slick-dependent version available as well.
 
-```
+```scala
 // standalone
 libraryDependencies += "io.github.godenji" % "isomorphic" % "0.1.7"
 
@@ -31,25 +31,27 @@ libraryDependencies += "io.github.godenji" % "isomorphic-play-slick" % "0.1.7"
 Example HTTP route transformation (Play Framework)
 ---------------------
 Define your wrapped type:
-```
+```scala
 import godenji.iso.MappedTo
 
 case class PlayerId(value: Long) extends AnyVal with MappedTo[Long]
 ```
 along with route converter added to your build.sbt project settings:
-```
+```scala
 routesImport += "godenji.iso.bindable.Route._"
 ```
 
 then given an http route in your conf file like:
-`/player/:id controllers.Player.show(id: PlayerId)`
+```scala
+/player/:id controllers.Player.show(id: PlayerId)
+```
 
 and an http request URI like `/player/42`, your controller's show method  will have a 
 `PlayerId(42)` available.
 
 Example form binding (Play Framework)
 --------------------
-```
+```scala
 case class Player(
   id: Option[PlayerId],
   firstName: String,
