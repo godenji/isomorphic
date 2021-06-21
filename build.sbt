@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 
-val scalaRelease = "2.13.3"
-val scalaCrossVersions = Seq("2.12.12", scalaRelease)
+val scalaRelease = "2.13.6"
+val scalaCrossVersions = Seq("2.12.14", scalaRelease)
 val appVersion = "0.1.7"
 
 lazy val root =
@@ -34,7 +34,7 @@ lazy val rootSlick =
   settings(baseSettings("isomorphic-slick")).
   settings(publishSettings("isomorphicSlick")).
   settings(
-    libraryDependencies += "com.typesafe.slick" %% "slick" % "3.3.2"
+    libraryDependencies += "com.typesafe.slick" %% "slick" % "3.3.3"
   ).
   enablePlugins(BuildInfoPlugin)
 
@@ -49,7 +49,7 @@ lazy val bindingsSlick =
   aggregate(rootSlick)
 
 val scalaTestPlay =
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % "test" withSources ()
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % "test" withSources ()
 
 def baseSettings(projectName: String) = Seq(
   name := projectName,

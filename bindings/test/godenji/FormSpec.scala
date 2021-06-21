@@ -4,6 +4,7 @@ import org.scalatestplus.play._
 import play.api.mvc._
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.data.FormBinding.Implicits._
 
 import model.{ User, UserForm }
 import bindable.Form._
